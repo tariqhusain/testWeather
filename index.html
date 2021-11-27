@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather</title>
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <div id="navbar-row">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#inputModal"
+          >
+            Search Weather in your city!
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="inputModal"
+      tabindex="-1"
+      aria-labelledby="inputModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div id="modal-header" class="modal-header">
+            <h5 class="modal-title" id="inputModalLabel">
+              Enter your Location
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div id="modal-body" class="modal-body">
+            <label id="location-weather-label" for="location-weather"
+              >Location:</label
+            >
+            <input id="location-weather" type="text" />
+          </div>
+          <div id="modal-footer" class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="getWeather()"
+            >
+              Get Weather
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      body {
+        background-image: url("/public/nature-1.jpg");
+      }
+    </style>
+    <script>
+      function getWeather() {
+        let location = document.getElementById("location-weather").value;
+        let appid = "6335ab3930970f405e5bed398895a08c";
+        let units = "metric";
+        let weatherAPIURL = encodeURI(
+          "https://api.openweathermap.org/data/2.5/weather?q=" +
+            location +
+            "&appid=" +
+            appid +
+            "&units=" +
+            units
+        );
+        let request = new XMLHttpRequest();
+        request.open("POST", weatherAPIURL);
+        request.send();
+        request.onload = () => {
+          if (request.status === 200) {
+            displayWeather(JSON.parse(request.response));
+          } else {
+            alert(`error ${request.status} ${request.statusText}`);
+          }
+        };
+      }
+
+      function displayWeather(weather) {
+        //alert (weather.main.temp);
+        document.getElementById("inputModalLabel").innerText = "Weather Info";
+
+        if (!document.getElementById("weather-info")) {
+          let weatherInfo = document.createElement("p");
+          weatherInfo.setAttribute("id", "weather-info");
+          document.getElementById("modal-body").appendChild(weatherInfo);
+        } else {
+          document.getElementById("weather-info").innerHTML = "";
+        }
+
+        let weatherInfoInnerHTML = {
+          "Current Temperature": weather.main.temp + " Celcius",
+          "Feels Like": weather.main.feels_like + " Celcius",
+          "Min Temperature": weather.main.temp_min + " Celcius",
+          "Max Temperature": weather.main.temp_max + " Celcius",
+          Humidity: weather.main.humidity + "%",
+        };
+
+        for (let key in weatherInfoInnerHTML) {
+          //alert(key);
+          document.getElementById("weather-info").innerHTML +=
+            key + ": <b>" + weatherInfoInnerHTML[key] + "</b><br>";
+        }
+      }
+    </script>
+  </body>
+</html>
